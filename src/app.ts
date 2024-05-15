@@ -1,15 +1,24 @@
 import express from 'express';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import connectDB from './config/db';
+import { APP_PORT } from './config/env';
+import redisClient from './config/redis';
 
 const app = express();
 
+connectDB();
+
 app.use(express.json());
-
-app.get('/', (_, res) => {
-    res.send("Server Running Properly")
+app.get('/', async (_, res) => {
+    try {
+        await redisClient.connect();
+        await redisClient.set(`accountNumber:1`, JSON.stringify({'id' : 1}));
+        res.json("OK");
+    } catch (error: any) {
+        res.json(error.message);
+    }
 })
+const PORT = APP_PORT || 300
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

@@ -52,7 +52,6 @@ const UserSchema: Schema = new Schema(
 );
 
 UserSchema.index({ accountNumber: 1 }, { unique: true });
-UserSchema.index({ emailAddress: 1 }, { unique: true });
 UserSchema.index({ identityNumber: 1 }, { unique: true });
 
 UserSchema.pre<IUser>("save", async function (next) {

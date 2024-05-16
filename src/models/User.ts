@@ -7,7 +7,7 @@ export interface IUser extends Document {
   emailAddress: string;
   identityNumber: string;
   password: string;
-  refreshToken: string;
+  toJSON(): Omit<this, "password">;
 }
 
 const UserSchema: Schema = new Schema(
@@ -33,10 +33,21 @@ const UserSchema: Schema = new Schema(
       required: [true, "Identity number is required"],
     },
     password: { type: String, required: [true, "Password is required"] },
-    refreshToken: { type: String, required: false },
   },
   {
     timestamps: true,
+    toJSON: {
+      transform: (_doc, ret) => {
+        delete ret.password;
+        return ret;
+      },
+    },
+    toObject: {
+      transform: (doc, ret) => {
+        delete ret.password;
+        return ret;
+      },
+    },
   }
 );
 

@@ -1,24 +1,17 @@
-import express from 'express';
-import connectDB from './config/db';
-import { APP_PORT } from './config/env';
-import redisClient from './config/redis';
+import express from "express";
+import { APP_PORT } from "./config/env";
+import { errorHandler } from "./middlewares/errorHandler";
+import connectDB from "./config/db";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
 
 connectDB();
 
 app.use(express.json());
-app.get('/', async (_, res) => {
-    try {
-        await redisClient.connect();
-        await redisClient.set(`accountNumber:1`, JSON.stringify({'id' : 1}));
-        res.json("OK");
-    } catch (error: any) {
-        res.json(error.message);
-    }
-})
-const PORT = APP_PORT || 300
+app.use("/api/users", userRoutes);
+app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+app.listen(APP_PORT, () => {
+  console.log(`Server running on port ${APP_PORT}`);
 });

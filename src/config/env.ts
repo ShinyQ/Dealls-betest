@@ -10,7 +10,7 @@ const MONGO_DATABASE = process.env.MONGO_DATABASE;
 export const MONGO_URI = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}?retryWrites=true&w=majority`;
 
 export const JWT_SECRET = process.env.JWT_SECRET;
-export const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+export const JWT_EXPIRATION = process.env.JWT_EXPIRATIOn;
 
 const REDIS_HOST = process.env.REDIS_HOST;
 const REDIS_PORT = process.env.REDIS_PORT;

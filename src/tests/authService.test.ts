@@ -45,7 +45,6 @@ describe("Auth API", () => {
       expect(res.body.data.user).to.have.property("identityNumber", validUser.identityNumber);
       expect(res.body.data.token).to.exist;
 
-      // Verify token
       const decodedToken = jwt.verify(res.body.data.token, JWT_SECRET as string);
       expect(decodedToken).to.have.property("id", validUser._id.toString());
     });

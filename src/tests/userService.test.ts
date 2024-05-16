@@ -189,10 +189,9 @@ describe("User API", () => {
   describe("PUT /api/users/{id}", () => {
     let validUserId: string;
     let invalidUserId: string;
-    let existingAccountUser: User;
+    let existingAccountUser;
   
     before(async () => {
-      // Create a user with an existing account number
       existingAccountUser = new User({
         userName: "existingAccountUser",
         accountNumber: "12106988832121",
@@ -249,7 +248,6 @@ describe("User API", () => {
     let invalidUserId: string;
 
     before(async () => {
-      // Create a user for testing
       const user = new User({
         userName: "userToDelete",
         accountNumber: "12345678901234",
@@ -257,10 +255,10 @@ describe("User API", () => {
         identityNumber: "3333333333",
         password: "password123",
       });
+
       const savedUser = await user.save();
+
       validUserId = savedUser._id.toString();
-  
-      // Invalid user ID
       invalidUserId = "invalidId";
     });
   
@@ -270,7 +268,6 @@ describe("User API", () => {
       expect(res.status).to.equal(200);
       expect(res.body.message).to.equal("User removed");
   
-      // Check if user was actually removed
       const deletedUser = await User.findById(validUserId);
       expect(deletedUser).to.not.exist;
     });

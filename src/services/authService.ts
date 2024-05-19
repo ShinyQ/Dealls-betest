@@ -14,19 +14,24 @@ class AuthService {
   async login(email: string, password: string): Promise<any> {
     try {
       const user = await User.findOne({ emailAddress: email });
-
+      console.log("User:", user);
+      
       if (!user) {
         return null;
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        throw new Error("Invalid credentials");
+        return null;
       }
-
+      console.log("Generated Token...");
+      
       const token = jwt.sign({ id: user._id }, JWT_SECRET as string, {
         expiresIn: JWT_EXPIRATION,
       });
+
+      console.log({ user, token });
+
       return { user, token };
     } catch (err: any) {
       return handleError(err);

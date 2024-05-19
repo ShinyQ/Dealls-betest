@@ -14,7 +14,7 @@
 
 ## Installation :
 ```
-1. Copy ".example" from .env.example
+1. Copy ".env.example" to make ".env"
 2. Fill the config according to your machine
 3. npm install
 ```

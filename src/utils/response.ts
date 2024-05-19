@@ -29,7 +29,7 @@ export const defaultMessage: { [key: number]: string } = {
 
 export function sendResponse(res: Response, response: ApiResponse): void {
   const message =
-    response.message || defaultMessage[response.statusCode] || "Unknown Error";
+    (response.message ?? defaultMessage[response.statusCode]) || "Unknown Error";
 
   res.status(response.statusCode).json({
     statusCode: response.statusCode,

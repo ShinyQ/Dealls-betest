@@ -7,9 +7,10 @@ import { JWT_SECRET } from "../config/env";
 
 describe("User API", () => {
   let token: string;
-  let userId: string;
 
   before(async () => {
+    await User.deleteMany({});
+
     token = jwt.sign({ id: "testUserId" }, JWT_SECRET as string, {
       expiresIn: "1h",
     });
@@ -31,8 +32,7 @@ describe("User API", () => {
       },
     ];
 
-    const users = await User.insertMany(usersArray);
-    userId = users[0]._id.toString();    
+    await User.insertMany(usersArray);
   });
 
   afterEach(async () => {
@@ -43,7 +43,7 @@ describe("User API", () => {
     it("should return unauthorized without token", async () => {
       const res = await request(app)
         .get("/api/users/filter")
-        .query({ value: "john@example.com", filterType: "emailAddress" });
+        .query({ value: "987654321", filterType: "identityNumber" });
 
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal("Access Unauthorized");
@@ -63,7 +63,7 @@ describe("User API", () => {
       const res = await request(app)
         .get("/api/users/filter")
         .set("Authorization", `Bearer ${token}`)
-        .query({ value: "john@example.com", filterType: "emailAddress" });
+        .query({ value: "987654321", filterType: "identityNumber" });
 
       expect(res.status).to.equal(200);
       expect(res.body.data).to.have.property(
@@ -158,7 +158,7 @@ describe("User API", () => {
     it("should return error if user with same unique field exists", async () => {
       const existingUser = new User({
         userName: "existingUser",
-        accountNumber: "12106988832121", 
+        accountNumber: "12106988832121",
         emailAddress: "existing@example.com",
         identityNumber: "9876543210",
         password: "password123",
@@ -168,7 +168,7 @@ describe("User API", () => {
 
       const userData = {
         userName: "newUser",
-        accountNumber: "12106988832121", 
+        accountNumber: "12106988832121",
         emailAddress: "new@example.com",
         identityNumber: "1234567890",
         password: "password123",
@@ -190,7 +190,7 @@ describe("User API", () => {
     let validUserId: string;
     let invalidUserId: string;
     let existingAccountUser;
-  
+
     before(async () => {
       existingAccountUser = new User({
         userName: "existingAccountUser",
@@ -201,7 +201,7 @@ describe("User API", () => {
       });
 
       await existingAccountUser.save();
-  
+
       const validUser = new User({
         userName: "validUser",
         accountNumber: "98765432101234",
@@ -214,30 +214,30 @@ describe("User API", () => {
       validUserId = savedUser._id.toString();
       invalidUserId = "invalidId";
     });
-  
+
     it("should update user data", async () => {
       const updateData = {
         userName: "updatedUser",
         password: "updatedPassword",
       };
-  
+
       const res = await request(app)
         .put(`/api/users/${validUserId}`)
         .send(updateData);
-  
+
       expect(res.status).to.equal(200);
       expect(res.body.message).to.equal("Success");
-  
+
       const updatedUser = await User.findById(validUserId);
       expect(updatedUser).to.exist;
       expect(updatedUser!.userName).to.equal(updateData.userName);
     });
-  
+
     it("should return error if ID is invalid", async () => {
       const res = await request(app)
         .put(`/api/users/${invalidUserId}`)
         .send({ userName: "updatedUser" });
-  
+
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal("Invalid user ID");
     });
@@ -261,22 +261,34 @@ describe("User API", () => {
       validUserId = savedUser._id.toString();
       invalidUserId = "invalidId";
     });
-  
+
     it("should remove user", async () => {
       const res = await request(app).delete(`/api/users/${validUserId}`);
-  
+
       expect(res.status).to.equal(200);
       expect(res.body.message).to.equal("User removed");
-  
+
       const deletedUser = await User.findById(validUserId);
       expect(deletedUser).to.not.exist;
     });
-  
+
     it("should return error if ID is invalid", async () => {
       const res = await request(app).delete(`/api/users/${invalidUserId}`);
-  
+
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal("Invalid user ID");
     });
   });
+
+  after(async () => {
+    const user = new User({
+      userName: "admin",
+      accountNumber: "123456admin",
+      emailAddress: "admin",
+      identityNumber: "987654321admin",
+      password: "admin",
+    });
+
+    await user.save();
+  })
 });

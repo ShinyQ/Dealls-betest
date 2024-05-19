@@ -38,7 +38,7 @@ class UserService {
 
   async updateUser(id: string, data: Partial<IUser>): Promise<IUser | null> {
     try {
-      if(data.password){
+      if (data.password) {
         data.password = await authService.hashPassword(data.password);
       }
 
@@ -67,11 +67,7 @@ class UserService {
     }
   }
 
-  private async cacheUser(
-    user:
-      | (Document<unknown, {}, IUser> & IUser & { _id: Types.ObjectId })
-      | null
-  ) {
+  private async cacheUser(user: IUser | null) {
     if (user) {
       await redisClient.set(
         `accountNumber:${user.accountNumber}`,
@@ -105,7 +101,7 @@ class UserService {
   }
 
   private async deleteCacheKeys(
-    user: (Document<unknown, {}, IUser> & IUser & { _id: Types.ObjectId })
+    user: Document<IUser> & IUser & { _id: Types.ObjectId }
   ) {
     await redisClient.delete(`accountNumber:${user.accountNumber}`);
     await redisClient.delete(`identityNumber:${user.identityNumber}`);

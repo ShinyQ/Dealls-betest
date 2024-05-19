@@ -8,7 +8,7 @@ class AuthController {
       const { email, password } = req.body;
       const user = await authService.login(email, password);
 
-      if(!user){
+      if (!user) {
         sendResponse(res, {
           statusCode: HttpStatus.BAD_REQUEST,
           message: "Invalid username or password",
